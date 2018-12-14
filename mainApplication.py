@@ -146,8 +146,8 @@ class Project(QMainWindow):
             points = QPolygon([
                 self.lastPoint,
                 QPoint(event.x(), event.y()),
-                QPoint(event.x(), event.y() + int(self.brushSize * 1.5)),
-                QPoint(self.lastPoint.x(), self.lastPoint.y() + int(self.brushSize * 1.5))
+                QPoint(event.x() - 5, event.y() + int(self.brushSize * 1.5)),
+                QPoint(self.lastPoint.x() - 5, self.lastPoint.y() + int(self.brushSize * 1.5))
             ]
             )
             painter.drawPolygon(points)
