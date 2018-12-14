@@ -105,6 +105,8 @@ class Project(QMainWindow):
     def Save(self):
         filePath, _ = QFileDialog.getSaveFileName(self, "Save Image", "",
                                                   "PNG(*.png);; JPEG(*.jpg *.jpeg);; ALL Files(*.*)")
+        if filePath == '':
+            return
         self.image.save(filePath)
 
     def Clear(self):
@@ -137,6 +139,13 @@ class Project(QMainWindow):
 
     def BlueColor(self):
         self.brushColor = Qt.blue
+
+    def keyPressEvent(self, event):
+        if int(event.modifiers()) == (Qt.ControlModifier):
+            if event.key() == Qt.Key_S:
+                self.Save()
+            elif event.key() == Qt.Key_C:
+                self.Clear()
 
 
 if __name__ == "__main__":
