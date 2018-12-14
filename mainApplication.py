@@ -1,4 +1,5 @@
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMenuBar, QMenu, QAction, QFileDialog
+from PyQt5.QtWidgets import QColorDialog
 from PyQt5.QtGui import QIcon, QImage, QPainter, QPen
 from PyQt5.QtCore import Qt, QPoint
 import sys
@@ -10,7 +11,7 @@ class Project(QMainWindow):
 
         self.Top = 200
         self.Left = 200
-        self.Width = 1000
+        self.Width = 1200
         self.Height = 800
 
         self.setup()
@@ -39,7 +40,6 @@ class Project(QMainWindow):
         self.image.fill(Qt.white)
 
     def BrushSize(self, brushMenu):
-
         px1Action = QAction(QIcon("pic/1px.png"), "1px", self)
         brushMenu.addAction(px1Action)
         px1Action.triggered.connect(self.Px1)
@@ -76,6 +76,10 @@ class Project(QMainWindow):
         yellow = mainMenu.addAction('')
         yellow.triggered.connect(self.YellowColor)
         yellow.setIcon(QIcon("pic/yellow.png"))
+
+        editColor = mainMenu.addAction('')
+        editColor.triggered.connect(self.EditColor)
+        editColor.setIcon(QIcon("pic/editColor.png"))
 
     def File(self, fileMenu):
         saveAction = QAction(QIcon("pic/save.png"), "Save As...", self)
@@ -137,6 +141,9 @@ class Project(QMainWindow):
 
     def BlueColor(self):
         self.brushColor = Qt.blue
+
+    def EditColor(self):
+        self.brushColor = QColorDialog.getColor()
 
 
 if __name__ == "__main__":
