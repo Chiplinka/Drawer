@@ -52,7 +52,8 @@ class Project(QMainWindow):
         brushes.addAction(airBrushe)
         airBrushe.triggered.connect(self.AirBrushe)
 
-        calligraphyBrush = QAction(QIcon("pic/calligraphyBrush.png"), "Calligraphy Brush", self)
+        calligraphyBrush = QAction(QIcon("pic/calligraphyBrush.png"),
+                                   "Calligraphy Brush", self)
         brushes.addAction(calligraphyBrush)
         calligraphyBrush.triggered.connect(self.CalligraphyBrush)
 
@@ -147,7 +148,8 @@ class Project(QMainWindow):
                 self.lastPoint,
                 QPoint(event.x(), event.y()),
                 QPoint(event.x() - 5, event.y() + int(self.brushSize * 1.5)),
-                QPoint(self.lastPoint.x() - 5, self.lastPoint.y() + int(self.brushSize * 1.5))
+                QPoint(self.lastPoint.x() - 5,
+                       self.lastPoint.y() + int(self.brushSize * 1.5))
             ]
             )
             painter.drawPolygon(points)
