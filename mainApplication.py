@@ -1,8 +1,9 @@
-from PyQt5.QtWidgets import QApplication, QMainWindow, QMenuBar, QMenu, QAction, QFileDialog
+from PyQt5.QtWidgets import QApplication, QMainWindow, QAction, QFileDialog
 from PyQt5.QtWidgets import QColorDialog
 from PyQt5.QtGui import QIcon, QImage, QPainter, QPen
 from PyQt5.QtCore import Qt, QPoint
 import sys
+from random import randint
 
 
 class Project(QMainWindow):
@@ -22,22 +23,34 @@ class Project(QMainWindow):
         self.setGeometry(self.Top, self.Left, self.Width, self.Height)
         self.setFixedSize(self.Width, self.Height)
 
+        self.brush = "Brush"
         self.brushSize = 1
         self.brushColor = Qt.black
         self.lastPoint = QPoint()
 
         mainMenu = self.menuBar()
         fileMenu = mainMenu.addMenu("File")
+        brushes = mainMenu.addMenu("Brushes")
         brushMenu = mainMenu.addMenu("Brush Size")
 
         self.BrushSize(brushMenu)
         self.File(fileMenu)
+        self.Brushes(brushes)
         self.Image()
         self.Colors(mainMenu)
 
     def Image(self):
         self.image = QImage(self.size(), QImage.Format_RGB32)
         self.image.fill(Qt.white)
+
+    def Brushes(self, brushes):
+        brushe = QAction(QIcon("pic/1px.png"), "Brushe", self)
+        brushes.addAction(brushe)
+        brushe.triggered.connect(self.Brushe)
+
+        airBrushe = QAction(QIcon("pic/1px.png"), "airBrushe", self)
+        brushes.addAction(airBrushe)
+        airBrushe.triggered.connect(self.AirBrushe)
 
     def BrushSize(self, brushMenu):
         px1Action = QAction(QIcon("pic/1px.png"), "1px", self)
@@ -96,15 +109,32 @@ class Project(QMainWindow):
         self.lastPoint = event.pos()
 
     def mouseMoveEvent(self, event):
+
         painter = QPainter(self.image)
 
         if event.buttons() == Qt.LeftButton:
-            painter.setPen(QPen(self.brushColor, self.brushSize, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
+            painter.setPen(QPen(self.brushColor, self.brushSize,
+                                Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
         else:
-            painter.setPen(QPen(Qt.white, self.brushSize, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
+            painter.setPen(QPen(Qt.white, self.brushSize, Qt.SolidLine,
+                                Qt.RoundCap, Qt.RoundJoin))
 
-        painter.drawLine(self.lastPoint, event.pos())
-        self.lastPoint = event.pos()
+        if self.brush == "Brush":
+            painter.drawLine(self.lastPoint, event.pos())
+            self.lastPoint = event.pos()
+
+        elif self.brush == "airBrushe":
+            if event.buttons() == Qt.LeftButton:
+                painter.setPen(QPen(self.brushColor, 1,
+                                    Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
+            else:
+                painter.setPen(QPen(Qt.white, 1, Qt.SolidLine,
+                                    Qt.RoundCap, Qt.RoundJoin))
+            for i in range((5 if self.brushSize == 1 else 15)):
+                x = randint(event.x(), event.x() + self.brushSize * 5)
+                y = randint(event.y(), event.y() + self.brushSize * 3)
+                painter.drawPoint(x, y)
+
         self.update()
 
     def paintEvent(self, event):
@@ -113,8 +143,13 @@ class Project(QMainWindow):
 
     def Save(self):
         filePath, _ = QFileDialog.getSaveFileName(self, "Save Image", "",
-                                                  "PNG(*.png);; JPEG(*.jpg *.jpeg);; ALL Files(*.*)")
-        self.image.save(filePath)
+                                                  "PNG(*.png);;"
+                                                  " JPEG(*.jpg *.jpeg);;"
+                                                  " ALL Files(*.*)")
+        if filePath == '':
+            return
+        else:
+            self.image.save(filePath)
 
     def Clear(self):
         self.image.fill(Qt.white)
@@ -149,6 +184,12 @@ class Project(QMainWindow):
 
     def EditColor(self):
         self.brushColor = QColorDialog.getColor()
+
+    def Brushe(self):
+        self.brush = "Brush"
+
+    def AirBrushe(self):
+        self.brush = "airBrushe"
 
 
 if __name__ == "__main__":
