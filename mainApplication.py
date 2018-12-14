@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QApplication, QMainWindow, QAction, QFileDialog
 from PyQt5.QtWidgets import QColorDialog
-from PyQt5.QtGui import QIcon, QImage, QPainter, QPen
+from PyQt5.QtGui import QIcon, QImage, QPainter, QPen, QPolygon, QBrush
 from PyQt5.QtCore import Qt, QPoint
 import sys
 from random import randint
@@ -44,13 +44,17 @@ class Project(QMainWindow):
         self.image.fill(Qt.white)
 
     def Brushes(self, brushes):
-        brushe = QAction(QIcon("pic/1px.png"), "Brushe", self)
+        brushe = QAction(QIcon("pic/Brushe.png"), "Brushe", self)
         brushes.addAction(brushe)
         brushe.triggered.connect(self.Brushe)
 
-        airBrushe = QAction(QIcon("pic/1px.png"), "airBrushe", self)
+        airBrushe = QAction(QIcon("pic/airBrushe.png"), "airBrushe", self)
         brushes.addAction(airBrushe)
         airBrushe.triggered.connect(self.AirBrushe)
+
+        calligraphyBrush = QAction(QIcon("pic/calligraphyBrush.png"), "Calligraphy Brush", self)
+        brushes.addAction(calligraphyBrush)
+        calligraphyBrush.triggered.connect(self.CalligraphyBrush)
 
     def BrushSize(self, brushMenu):
         px1Action = QAction(QIcon("pic/1px.png"), "1px", self)
@@ -121,7 +125,6 @@ class Project(QMainWindow):
 
         if self.brush == "Brush":
             painter.drawLine(self.lastPoint, event.pos())
-            self.lastPoint = event.pos()
 
         elif self.brush == "airBrushe":
             if event.buttons() == Qt.LeftButton:
@@ -132,9 +135,24 @@ class Project(QMainWindow):
                                     Qt.RoundCap, Qt.RoundJoin))
             for i in range((5 if self.brushSize == 1 else 15)):
                 x = randint(event.x(), event.x() + self.brushSize * 5)
-                y = randint(event.y(), event.y() + self.brushSize * 3)
+                y = randint(event.y(), event.y() + self.brushSize * 5)
                 painter.drawPoint(x, y)
 
+        elif self.brush == "calligraphyBrush":
+            painter.setPen(QPen(self.brushColor, 3,
+                                Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
+            painter.setBrush(QBrush(self.brushColor, Qt.SolidPattern))
+
+            points = QPolygon([
+                self.lastPoint,
+                QPoint(event.x(), event.y()),
+                QPoint(event.x(), event.y() + int(self.brushSize * 1.5)),
+                QPoint(self.lastPoint.x(), self.lastPoint.y() + int(self.brushSize * 1.5))
+            ]
+            )
+            painter.drawPolygon(points)
+
+        self.lastPoint = event.pos()
         self.update()
 
     def paintEvent(self, event):
@@ -190,6 +208,9 @@ class Project(QMainWindow):
 
     def AirBrushe(self):
         self.brush = "airBrushe"
+
+    def CalligraphyBrush(self):
+        self.brush = "calligraphyBrush"
 
 
 if __name__ == "__main__":
