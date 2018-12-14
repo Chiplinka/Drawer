@@ -97,7 +97,12 @@ class Project(QMainWindow):
 
     def mouseMoveEvent(self, event):
         painter = QPainter(self.image)
-        painter.setPen(QPen(self.brushColor, self.brushSize, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
+
+        if event.buttons() == Qt.LeftButton:
+            painter.setPen(QPen(self.brushColor, self.brushSize, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
+        else:
+            painter.setPen(QPen(Qt.white, self.brushSize, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
+
         painter.drawLine(self.lastPoint, event.pos())
         self.lastPoint = event.pos()
         self.update()
