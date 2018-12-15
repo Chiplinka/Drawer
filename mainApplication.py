@@ -1,14 +1,14 @@
 from PyQt5.QtCore import Qt, QPoint
 from PyQt5.QtWidgets import QColorDialog
-from PyQt5.QtGui import QIcon, QImage, QPainter,\
+from PyQt5.QtGui import QIcon, QImage, QPainter, \
     QPen, QPolygon, QBrush
-from PyQt5.QtWidgets import QApplication,\
+from PyQt5.QtWidgets import QApplication, \
     QMainWindow, QAction, QFileDialog, QMessageBox
 import sys
 from random import randint
 
 
-class Project(QMainWindow):
+class Drawer(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setup()
@@ -273,6 +273,6 @@ class Project(QMainWindow):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    exe = Project()
+    exe = Drawer()
     exe.show()
     app.exec()
