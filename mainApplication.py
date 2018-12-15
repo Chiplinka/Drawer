@@ -1,7 +1,8 @@
 from PyQt5.QtCore import Qt, QPoint
 from PyQt5.QtWidgets import QColorDialog
 from PyQt5.QtGui import QIcon, QImage, QPainter, QPen, QPolygon, QBrush
-from PyQt5.QtWidgets import QApplication, QMainWindow, QAction, QFileDialog
+from PyQt5.QtWidgets import QApplication,\
+    QMainWindow, QAction, QFileDialog, QMessageBox
 import sys
 from random import randint
 
@@ -29,92 +30,92 @@ class Project(QMainWindow):
         brushMenu = mainMenu.addMenu("Brush Size")
         shapes = mainMenu.addMenu("Shapes")
 
-        self.BrushSize(brushMenu)
-        self.File(fileMenu)
-        self.Brushes(brushes)
-        self.Image()
-        self.Colors(mainMenu)
-        self.Shapes(shapes)
+        self.brush_size(brushMenu)
+        self.file(fileMenu)
+        self.brushes(brushes)
+        self.image_main()
+        self.colors(mainMenu)
+        self.shapes(shapes)
 
-    def Image(self):
+    def image_main(self):
         self.image = QImage(self.size(), QImage.Format_RGB32)
         self.image.fill(Qt.white)
 
-    def Brushes(self, brushes):
+    def brushes(self, brushes):
         brushe = QAction(QIcon("pic/Brushe.png"), "Brushe", self)
         brushes.addAction(brushe)
-        brushe.triggered.connect(self.Brushe)
+        brushe.triggered.connect(self.brushe)
 
         airBrushe = QAction(QIcon("pic/airBrushe.png"), "airBrushe", self)
         brushes.addAction(airBrushe)
-        airBrushe.triggered.connect(self.AirBrushe)
+        airBrushe.triggered.connect(self.air_brushe)
 
         calligraphyBrush = QAction(QIcon("pic/calligraphyBrush.png"),
                                    "Calligraphy Brush", self)
         brushes.addAction(calligraphyBrush)
-        calligraphyBrush.triggered.connect(self.CalligraphyBrush)
+        calligraphyBrush.triggered.connect(self.calligraphy_brush)
 
-    def BrushSize(self, brushMenu):
+    def brush_size(self, brushMenu):
         px1Action = QAction(QIcon("pic/1px.png"), "1px", self)
         brushMenu.addAction(px1Action)
-        px1Action.triggered.connect(self.Px1)
+        px1Action.triggered.connect(self.px1)
 
         px3Action = QAction(QIcon("pic/3px.png"), "3px", self)
         brushMenu.addAction(px3Action)
-        px3Action.triggered.connect(self.Px3)
+        px3Action.triggered.connect(self.px3)
 
         px5Action = QAction(QIcon("pic/5px.png"), "5px", self)
         brushMenu.addAction(px5Action)
-        px5Action.triggered.connect(self.Px5)
+        px5Action.triggered.connect(self.px5)
 
         px8Action = QAction(QIcon("pic/8px.png"), "8px", self)
         brushMenu.addAction(px8Action)
-        px8Action.triggered.connect(self.Px8)
+        px8Action.triggered.connect(self.px8)
 
-    def Colors(self, mainMenu):
+    def colors(self, mainMenu):
         black = mainMenu.addAction('')
-        black.triggered.connect(self.BlackColor)
+        black.triggered.connect(self.black_color)
         black.setIcon(QIcon("pic/black.png"))
 
         red = mainMenu.addAction('')
-        red.triggered.connect(self.RedColor)
+        red.triggered.connect(self.red_color)
         red.setIcon(QIcon("pic/red.png"))
 
         blue = mainMenu.addAction('')
-        blue.triggered.connect(self.BlueColor)
+        blue.triggered.connect(self.blue_color)
         blue.setIcon(QIcon("pic/blue.png"))
 
         green = mainMenu.addAction('')
-        green.triggered.connect(self.GreenColor)
+        green.triggered.connect(self.green_color)
         green.setIcon(QIcon("pic/green.png"))
 
         yellow = mainMenu.addAction('')
-        yellow.triggered.connect(self.YellowColor)
+        yellow.triggered.connect(self.yellow_color)
         yellow.setIcon(QIcon("pic/yellow.png"))
 
         editColor = mainMenu.addAction('')
-        editColor.triggered.connect(self.EditColor)
+        editColor.triggered.connect(self.edit_color)
         editColor.setIcon(QIcon("pic/editColor.png"))
 
-    def File(self, fileMenu):
+    def file(self, fileMenu):
         saveAction = QAction(QIcon("pic/save.png"), "Save As...", self)
         saveAction.setShortcut("Ctrl+S")
         fileMenu.addAction(saveAction)
-        saveAction.triggered.connect(self.Save)
+        saveAction.triggered.connect(self.save_main)
 
         clearAction = QAction(QIcon("pic/clear.png"), "Clear", self)
         clearAction.setShortcut("Ctrl+C")
         fileMenu.addAction(clearAction)
-        clearAction.triggered.connect(self.Clear)
+        clearAction.triggered.connect(self.clear)
 
-    def Shapes(self, shape):
+    def shapes(self, shape):
         rectangle = QAction(QIcon("pic/rect.png"), "Rectangle", self)
         shape.addAction(rectangle)
-        rectangle.triggered.connect(self.Rectangle)
+        rectangle.triggered.connect(self.rectangle)
 
         ellipse = QAction(QIcon("pic/ellipse.png"), "Ellipse", self)
         shape.addAction(ellipse)
-        ellipse.triggered.connect(self.Ellipse)
+        ellipse.triggered.connect(self.ellipse)
 
     def mousePressEvent(self, event):
         self.lastPoint = event.pos()
@@ -141,7 +142,8 @@ class Project(QMainWindow):
                                 Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
             painter.setBrush(QBrush(self.brushColor, Qt.SolidPattern))
             painter.drawEllipse(self.lastPoint.x(), self.lastPoint.y(),
-                                event.x() - self.lastPoint.x(), event.y() - self.lastPoint.y())
+                                event.x() - self.lastPoint.x(),
+                                event.y() - self.lastPoint.y())
         self.update()
 
     def mouseMoveEvent(self, event):
@@ -165,6 +167,7 @@ class Project(QMainWindow):
             else:
                 painter.setPen(QPen(Qt.white, 1, Qt.SolidLine,
                                     Qt.RoundCap, Qt.RoundJoin))
+
             for i in range((5 if self.brushSize == 1 else 15)):
                 x = randint(event.x(), event.x() + self.brushSize * 5)
                 y = randint(event.y(), event.y() + self.brushSize * 5)
@@ -193,7 +196,15 @@ class Project(QMainWindow):
         painter = QPainter(self)
         painter.drawImage(self.rect(), self.image, self.image.rect())
 
-    def Save(self):
+    def closeEvent(self, event):
+        flag = QMessageBox.question(self, 'Exit',
+                                    "Do you want to save changes?",
+                                    QMessageBox.Yes | QMessageBox.No,
+                                    QMessageBox.No)
+        if flag == QMessageBox.Yes:
+            self.save_main()
+
+    def save_main(self):
         filePath, _ = QFileDialog.getSaveFileName(self, "Save Image", "",
                                                   "PNG(*.png);;"
                                                   " JPEG(*.jpg *.jpeg);;"
@@ -203,53 +214,53 @@ class Project(QMainWindow):
         else:
             self.image.save(filePath)
 
-    def Clear(self):
+    def clear(self):
         self.image.fill(Qt.white)
         self.update()
 
-    def Px1(self):
+    def px1(self):
         self.brushSize = 1
 
-    def Px3(self):
+    def px3(self):
         self.brushSize = 3
 
-    def Px5(self):
+    def px5(self):
         self.brushSize = 5
 
-    def Px8(self):
+    def px8(self):
         self.brushSize = 8
 
-    def BlackColor(self):
+    def black_color(self):
         self.brushColor = Qt.black
 
-    def RedColor(self):
+    def red_color(self):
         self.brushColor = Qt.red
 
-    def GreenColor(self):
+    def green_color(self):
         self.brushColor = Qt.green
 
-    def YellowColor(self):
+    def yellow_color(self):
         self.brushColor = Qt.yellow
 
-    def BlueColor(self):
+    def blue_color(self):
         self.brushColor = Qt.blue
 
-    def EditColor(self):
+    def edit_color(self):
         self.brushColor = QColorDialog.getColor()
 
-    def Brushe(self):
+    def brushe(self):
         self.brush = "Brush"
 
-    def AirBrushe(self):
+    def air_brushe(self):
         self.brush = "airBrushe"
 
-    def CalligraphyBrush(self):
+    def calligraphy_brush(self):
         self.brush = "calligraphyBrush"
 
-    def Rectangle(self):
+    def rectangle(self):
         self.brush = "rectangle"
 
-    def Ellipse(self):
+    def ellipse(self):
         self.brush = "ellipse"
 
 
