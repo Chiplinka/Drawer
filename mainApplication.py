@@ -174,9 +174,14 @@ class Project(QMainWindow):
                 painter.drawPoint(x, y)
 
         elif self.brush == "calligraphyBrush":
-            painter.setPen(QPen(self.brushColor, 3,
-                                Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
-            painter.setBrush(QBrush(self.brushColor, Qt.SolidPattern))
+            if event.buttons() == Qt.LeftButton:
+                painter.setPen(QPen(self.brushColor, 3,
+                                    Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
+                painter.setBrush(QBrush(self.brushColor, Qt.SolidPattern))
+            else:
+                painter.setPen(QPen(Qt.white, 3, Qt.SolidLine,
+                                    Qt.RoundCap, Qt.RoundJoin))
+                painter.setBrush(QBrush(Qt.white, Qt.SolidPattern))
 
             points = QPolygon([
                 self.lastPoint,
