@@ -1,6 +1,7 @@
 from PyQt5.QtCore import Qt, QPoint
 from PyQt5.QtWidgets import QColorDialog
-from PyQt5.QtGui import QIcon, QImage, QPainter, QPen, QPolygon, QBrush
+from PyQt5.QtGui import QIcon, QImage, QPainter,\
+    QPen, QPolygon, QBrush
 from PyQt5.QtWidgets import QApplication,\
     QMainWindow, QAction, QFileDialog, QMessageBox
 import sys
@@ -192,6 +193,7 @@ class Project(QMainWindow):
             ]
             )
             painter.drawPolygon(points)
+
         if self.brush != "rectangle" and self.brush != "ellipse":
             self.lastPoint = event.pos()
 
