@@ -1,7 +1,7 @@
-from PyQt5.QtWidgets import QApplication, QMainWindow, QAction, QFileDialog
+from PyQt5.QtCore import Qt, QPoint
 from PyQt5.QtWidgets import QColorDialog
 from PyQt5.QtGui import QIcon, QImage, QPainter, QPen, QPolygon, QBrush
-from PyQt5.QtCore import Qt, QPoint
+from PyQt5.QtWidgets import QApplication, QMainWindow, QAction, QFileDialog
 import sys
 from random import randint
 
@@ -9,35 +9,32 @@ from random import randint
 class Project(QMainWindow):
     def __init__(self):
         super().__init__()
-
-        self.Top = 200
-        self.Left = 200
-        self.Width = 1200
-        self.Height = 800
-
         self.setup()
 
     def setup(self):
-        self.setWindowTitle("Paint.V.2.0")
+        self.setWindowTitle("ProjectMain")
         self.setWindowIcon(QIcon("pic/mainIcon.png"))
-        self.setGeometry(self.Top, self.Left, self.Width, self.Height)
-        self.setFixedSize(self.Width, self.Height)
+        self.setGeometry(200, 200, 1200, 800)
+        self.setFixedSize(1200, 800)
 
         self.brush = "Brush"
         self.brushSize = 1
         self.brushColor = Qt.black
         self.lastPoint = QPoint()
+        self.firstPoint = False
 
         mainMenu = self.menuBar()
         fileMenu = mainMenu.addMenu("File")
         brushes = mainMenu.addMenu("Brushes")
         brushMenu = mainMenu.addMenu("Brush Size")
+        shapes = mainMenu.addMenu("Shapes")
 
         self.BrushSize(brushMenu)
         self.File(fileMenu)
         self.Brushes(brushes)
         self.Image()
         self.Colors(mainMenu)
+        self.Shapes(shapes)
 
     def Image(self):
         self.image = QImage(self.size(), QImage.Format_RGB32)
@@ -110,8 +107,42 @@ class Project(QMainWindow):
         fileMenu.addAction(clearAction)
         clearAction.triggered.connect(self.Clear)
 
+    def Shapes(self, shape):
+        rectangle = QAction(QIcon("pic/rect.png"), "Rectangle", self)
+        shape.addAction(rectangle)
+        rectangle.triggered.connect(self.Rectangle)
+
+        ellipse = QAction(QIcon("pic/ellipse.png"), "Ellipse", self)
+        shape.addAction(ellipse)
+        ellipse.triggered.connect(self.Ellipse)
+
     def mousePressEvent(self, event):
         self.lastPoint = event.pos()
+
+    def mouseReleaseEvent(self, event):
+        if self.brush == 'rectangle':
+
+            painter = QPainter(self.image)
+            painter.setPen(QPen(self.brushColor, 1,
+                                Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
+            painter.setBrush(QBrush(self.brushColor, Qt.SolidPattern))
+            points = QPolygon([
+                self.lastPoint,
+                QPoint(event.x(), self.lastPoint.y()),
+                event.pos(),
+                QPoint(self.lastPoint.x(), event.y())
+            ]
+            )
+            painter.drawPolygon(points)
+        elif self.brush == 'ellipse':
+
+            painter = QPainter(self.image)
+            painter.setPen(QPen(self.brushColor, 8,
+                                Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
+            painter.setBrush(QBrush(self.brushColor, Qt.SolidPattern))
+            painter.drawEllipse(self.lastPoint.x(), self.lastPoint.y(),
+                                event.x() - self.lastPoint.x(), event.y() - self.lastPoint.y())
+        self.update()
 
     def mouseMoveEvent(self, event):
 
@@ -153,8 +184,9 @@ class Project(QMainWindow):
             ]
             )
             painter.drawPolygon(points)
+        if self.brush != "rectangle" and self.brush != "ellipse":
+            self.lastPoint = event.pos()
 
-        self.lastPoint = event.pos()
         self.update()
 
     def paintEvent(self, event):
@@ -213,6 +245,12 @@ class Project(QMainWindow):
 
     def CalligraphyBrush(self):
         self.brush = "calligraphyBrush"
+
+    def Rectangle(self):
+        self.brush = "rectangle"
+
+    def Ellipse(self):
+        self.brush = "ellipse"
 
 
 if __name__ == "__main__":
