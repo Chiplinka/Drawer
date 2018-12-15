@@ -14,7 +14,7 @@ class Drawer(QMainWindow):
         self.setup()
 
     def setup(self):
-        self.setWindowTitle("ProjectMain")
+        self.setWindowTitle("Drawer")
         self.setWindowIcon(QIcon("pic/mainIcon.png"))
         self.setGeometry(200, 200, 1200, 800)
         self.setFixedSize(1200, 800)
