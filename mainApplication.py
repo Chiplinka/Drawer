@@ -24,6 +24,9 @@ class Drawer(QMainWindow):
         self.brushColor = Qt.black
         self.lastPoint = QPoint()
         self.firstPoint = False
+        self.curPoint = QPoint()
+        self.lastType = 'Brush'
+        self.rubber = False
 
         mainMenu = self.menuBar()
         fileMenu = mainMenu.addMenu("File")
@@ -120,8 +123,12 @@ class Drawer(QMainWindow):
 
     def mousePressEvent(self, event):
         self.lastPoint = event.pos()
+        self.curPoint = event.pos()
+        self.firstPoint = True
 
     def mouseReleaseEvent(self, event):
+        self.curPoint = event.pos()
+
         if self.brush == 'rectangle':
 
             painter = QPainter(self.image)
@@ -136,6 +143,7 @@ class Drawer(QMainWindow):
             ]
             )
             painter.drawPolygon(points)
+            self.firstPoint = False
         elif self.brush == 'ellipse':
 
             painter = QPainter(self.image)
@@ -145,63 +153,106 @@ class Drawer(QMainWindow):
             painter.drawEllipse(self.lastPoint.x(), self.lastPoint.y(),
                                 event.x() - self.lastPoint.x(),
                                 event.y() - self.lastPoint.y())
+            self.firstPoint = False
         self.update()
 
     def mouseMoveEvent(self, event):
 
         painter = QPainter(self.image)
-
         if event.buttons() == Qt.LeftButton:
-            painter.setPen(QPen(self.brushColor, self.brushSize,
-                                Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
+
+            if self.rubber:
+                self.brush = self.lastType
+                self.rubber = False
+
+            if event.buttons() == Qt.LeftButton:
+                painter.setPen(QPen(self.brushColor, self.brushSize,
+                                    Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
+
+            if self.brush == "Brush":
+                painter.drawLine(self.lastPoint, event.pos())
+
+            elif self.brush == "airBrushe":
+                if event.buttons() == Qt.LeftButton:
+                    painter.setPen(QPen(self.brushColor, 1,
+                                        Qt.SolidLine,
+                                        Qt.RoundCap,
+                                        Qt.RoundJoin))
+                for i in range((5 if self.brushSize == 1 else 15)):
+                    x = randint(event.x(), event.x() + self.brushSize * 5)
+                    y = randint(event.y(), event.y() + self.brushSize * 5)
+                    painter.drawPoint(x, y)
+
+            elif self.brush == "calligraphyBrush":
+                if event.buttons() == Qt.LeftButton:
+                    painter.setPen(QPen(self.brushColor, 3,
+                                        Qt.SolidLine,
+                                        Qt.RoundCap,
+                                        Qt.RoundJoin))
+                    painter.setBrush(QBrush(self.brushColor, Qt.SolidPattern))
+                points = QPolygon([
+                    self.lastPoint,
+                    QPoint(event.x(), event.y()),
+                    QPoint(event.x() - 5,
+                           event.y() + int(self.brushSize * 1.5)),
+                    QPoint(self.lastPoint.x() - 5,
+                           self.lastPoint.y() + int(self.brushSize * 1.5))
+                ]
+                )
+                painter.drawPolygon(points)
+
         else:
-            painter.setPen(QPen(Qt.white, self.brushSize, Qt.SolidLine,
-                                Qt.RoundCap, Qt.RoundJoin))
-
-        if self.brush == "Brush":
+            if not self.rubber:
+                self.lastType = self.brush
+            self.brush = "Brush"
+            self.rubber = True
+            painter.setPen(QPen(Qt.white, self.brushSize,
+                                Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
             painter.drawLine(self.lastPoint, event.pos())
-
-        elif self.brush == "airBrushe":
-            if event.buttons() == Qt.LeftButton:
-                painter.setPen(QPen(self.brushColor, 1,
-                                    Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
-            else:
-                painter.setPen(QPen(Qt.white, 1, Qt.SolidLine,
-                                    Qt.RoundCap, Qt.RoundJoin))
-
-            for i in range((5 if self.brushSize == 1 else 15)):
-                x = randint(event.x(), event.x() + self.brushSize * 5)
-                y = randint(event.y(), event.y() + self.brushSize * 5)
-                painter.drawPoint(x, y)
-
-        elif self.brush == "calligraphyBrush":
-            if event.buttons() == Qt.LeftButton:
-                painter.setPen(QPen(self.brushColor, 3,
-                                    Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
-                painter.setBrush(QBrush(self.brushColor, Qt.SolidPattern))
-            else:
-                painter.setPen(QPen(Qt.white, 3, Qt.SolidLine,
-                                    Qt.RoundCap, Qt.RoundJoin))
-                painter.setBrush(QBrush(Qt.white, Qt.SolidPattern))
-
-            points = QPolygon([
-                self.lastPoint,
-                QPoint(event.x(), event.y()),
-                QPoint(event.x() - 5, event.y() + int(self.brushSize * 1.5)),
-                QPoint(self.lastPoint.x() - 5,
-                       self.lastPoint.y() + int(self.brushSize * 1.5))
-            ]
-            )
-            painter.drawPolygon(points)
 
         if self.brush != "rectangle" and self.brush != "ellipse":
             self.lastPoint = event.pos()
-
+        self.curPoint = event.pos()
         self.update()
 
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.drawImage(self.rect(), self.image, self.image.rect())
+
+        if self.brush == "rectangle" and self.firstPoint:
+            pt = QPainter(self)
+            pt.setPen(QPen(self.brushColor, 1,
+                           Qt.SolidLine, Qt.RoundCap,
+                           Qt.RoundJoin))
+            pt.setBrush(QBrush(self.brushColor, Qt.SolidPattern))
+            points = QPolygon([
+                self.lastPoint,
+                QPoint(self.curPoint.x(), self.lastPoint.y()),
+                self.curPoint,
+                QPoint(self.lastPoint.x(), self.curPoint.y())
+            ]
+            )
+            pt.drawPolygon(points)
+            self.update()
+        elif self.brush == 'ellipse' and self.firstPoint:
+
+            pt = QPainter(self)
+            pt.setPen(QPen(self.brushColor, 8,
+                           Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
+            pt.setBrush(QBrush(self.brushColor, Qt.SolidPattern))
+            pt.drawEllipse(self.lastPoint.x(), self.lastPoint.y(),
+                           self.curPoint.x() - self.lastPoint.x(),
+                           self.curPoint.y() - self.lastPoint.y())
+            self.update()
+        elif self.brush == 'Brush' and self.rubber:
+            pt = QPainter(self)
+            pt.setPen(QPen(Qt.black, 2,
+                           Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
+            pt.drawEllipse(self.lastPoint.x() - int(self.brushSize / 2),
+                           self.lastPoint.y() - int(self.brushSize / 2),
+                           self.brushSize,
+                           self.brushSize)
+            self.update()
 
     def closeEvent(self, event):
         flag = QMessageBox.question(self, 'Exit',
@@ -257,18 +308,23 @@ class Drawer(QMainWindow):
 
     def brushe(self):
         self.brush = "Brush"
+        self.lastType = self.brush
 
     def air_brushe(self):
         self.brush = "airBrushe"
+        self.lastType = self.brush
 
     def calligraphy_brush(self):
         self.brush = "calligraphyBrush"
+        self.lastType = self.brush
 
     def rectangle(self):
         self.brush = "rectangle"
+        self.lastType = self.brush
 
     def ellipse(self):
         self.brush = "ellipse"
+        self.lastType = self.brush
 
 
 if __name__ == "__main__":
