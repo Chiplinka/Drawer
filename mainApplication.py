@@ -125,6 +125,10 @@ class Drawer(QMainWindow):
         self.lastPoint = event.pos()
         self.curPoint = event.pos()
         self.firstPoint = True
+        if event.buttons() == Qt.LeftButton:
+            if self.rubber:
+                self.brush = self.lastType
+                self.rubber = False
 
     def mouseReleaseEvent(self, event):
         self.curPoint = event.pos()
@@ -160,11 +164,6 @@ class Drawer(QMainWindow):
 
         painter = QPainter(self.image)
         if event.buttons() == Qt.LeftButton:
-
-            if self.rubber:
-                self.brush = self.lastType
-                self.rubber = False
-
             if event.buttons() == Qt.LeftButton:
                 painter.setPen(QPen(self.brushColor, self.brushSize,
                                     Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
